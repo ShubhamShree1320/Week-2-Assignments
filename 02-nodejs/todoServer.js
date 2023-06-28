@@ -45,5 +45,52 @@ const bodyParser = require('body-parser');
 const app = express();
 
 app.use(bodyParser.json());
+const TODOS = [];
+function findAtIndex(arr,id){
+  for (var i=0;i<arr[i].length;i++){
+    if(arr[i].id==id) return i;
+    else
+      return -1;
+  }
+}
+app.get('/todos',(req,res)=>{
+  res.json(TODOS);
+}
+);
+var ctr=1;
+app.post('/todos',(req,res)=>{
+  const newToDo = {
+    id:ctr,
+    title: req.body.title,
+    description: req.body.description
+  };
+  ctr=ctr+1;
+  TODOS.push(newToDo);
+  res.status(201).json(newToDo);
+});
+// app.delete('/todos/:id',(req,res)=>{
+//   const todoIndex=findAtIndex(TODOS,parseInt(req.params.id));
 
-module.exports = app;
+//   if(todoIndex==-1)
+//     res.status(404).send();
+//   else{
+//     TODOS=TODOS.splice(todoIndex,1)
+//     res.status(200).send()
+//   }
+// });
+app.delete('/todos/:id', (req, res) => {
+  const todoIndex = TODOS.findIndex(t => t.id === parseInt(req.params.id));
+  if (todoIndex === -1) {
+    res.status(404).send();
+  } else {
+    TODOS.splice(todoIndex, 1);
+    res.status(200).send();
+  }
+});
+//Uncomment to start the server
+app.listen(3000, ()=>{
+  console.log('ToDo Server started.')
+})
+
+
+//module.exports = app;
